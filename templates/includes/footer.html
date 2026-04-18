@@ -1,0 +1,33 @@
+{% load humanize %}
+<footer class="bg-slate-900 text-slate-400 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-3 gap-8">
+            <div>
+                <h3 class="text-white text-lg font-semibold mb-4">{{ site_settings.site_name|default:"Rental Cars Morocco" }}</h3>
+                <p class="text-sm">Location de voitures premium au Maroc. Service professionnel et véhicules de qualité.</p>
+            </div>
+            <div>
+                <h3 class="text-white text-lg font-semibold mb-4">Liens rapides</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="{% url 'home' %}" class="hover:text-white transition">Accueil</a></li>
+                    <li><a href="{% url 'fleet:cars' %}" class="hover:text-white transition">Nos Voitures</a></li>
+                    <li><a href="{% url 'bookings:search' %}" class="hover:text-white transition">Disponibilité</a></li>
+                    <li><a href="{% url 'contact' %}" class="hover:text-white transition">Contact</a></li>
+                    <li><a href="{% url 'faq' %}" class="hover:text-white transition">FAQ</a></li>
+                    <li><a href="{% url 'terms' %}" class="hover:text-white transition">Conditions</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-white text-lg font-semibold mb-4">Contact</h3>
+                <ul class="space-y-2 text-sm">
+                    {% if site_settings.phone %}<li>Tél: {{ site_settings.phone }}</li>{% endif %}
+                    {% if site_settings.email %}<li>Email: {{ site_settings.email }}</li>{% endif %}
+                    {% if site_settings.address %}<li>{{ site_settings.address }}</li>{% endif %}
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-slate-800 mt-8 pt-8 text-center text-sm">
+            <p>&copy; {% now "Y" %} {{ site_settings.site_name|default:"Rental Cars Morocco" }}. Tous droits réservés.</p>
+        </div>
+    </div>
+</footer>

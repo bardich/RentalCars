@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Conditions Générales - {{ site_settings.site_name|default:"Rental Cars Morocco" }}{% endblock %}
+
+{% block content %}
+<div class="py-12 bg-slate-50 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold mb-4">Conditions Générales</h1>
+            <p class="text-slate-600">Dernière mise à jour : {{ now|date:"F Y"|default:"Janvier 2025" }}</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-8 prose prose-slate max-w-none">
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">1. Conditions de Location</h2>
+                <p class="mb-4">Pour louer un véhicule chez {{ site_settings.site_name|default:"Rental Cars Morocco" }}, le locataire doit :</p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Être âgé de 21 ans minimum (25 ans pour les véhicules de luxe)</li>
+                    <li>Disposer d'un permis de conduire valide depuis au moins 2 ans</li>
+                    <li>Présenter une pièce d'identité en cours de validité (passeport ou CIN)</li>
+                    <li>Disposer d'une carte de crédit ou de débit au nom du conducteur principal</li>
+                </ul>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">2. Réservation et Paiement</h2>
+                <p class="mb-4">Les réservations peuvent être effectuées :</p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>En ligne via notre site web</li>
+                    <li>Par téléphone au {{ site_settings.phone|default:"+212 5XX XXX XXX" }}</li>
+                    <li>Via WhatsApp au {{ site_settings.whatsapp_number|default:"+212 6XX XXX XXX" }}</li>
+                    <li>Directement à notre agence</li>
+                </ul>
+                <p class="mt-4">Un acompte de 30% du montant total peut être requis pour confirmer la réservation. Le solde est payable au retrait du véhicule.</p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">3. Caution et Garanties</h2>
+                <p class="mb-4">Une caution est exigée pour toute location. Le montant varie selon la catégorie du véhicule :</p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Catégorie Économique : 3 000 MAD</li>
+                    <li>Catégorie Berline/SUV : 5 000 MAD</li>
+                    <li>Catégorie Luxe/Premium : 10 000 MAD</li>
+                </ul>
+                <p class="mt-4">La caution est restituée dans un délai de 7 à 14 jours ouvrés après le retour du véhicule, sous réserve d'absence de dommages.</p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">4. Kilométrage</h2>
+                <p class="mb-4">Le kilométrage inclus dans la location est de 200 km par jour. Au-delà de cette limite, des frais supplémentaires de 2 MAD par kilomètre s'appliquent. Des forfaits kilométrage illimité sont disponibles sur demande.</p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">5. Assurance</h2>
+                <p class="mb-4">Tous nos véhicules sont assurés avec une assurance tous risques. Cependant, une franchise reste à la charge du locataire en cas de sinistre :</p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Catégorie Économique : franchise de 5 000 MAD</li>
+                    <li>Catégorie Berline/SUV : franchise de 10 000 MAD</li>
+                    <li>Catégorie Luxe/Premium : franchise de 20 000 MAD</li>
+                </ul>
+                <p class="mt-4">Une assurance réduction de franchise peut être souscrite en option.</p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">6. Annulation</h2>
+                <p class="mb-4">Les conditions d'annulation sont les suivantes :</p>
+                <ul class="list-disc pl-6 space-y-2">
+                    <li>Annulation plus de 48h avant le retrait : remboursement intégral</li>
+                    <li>Annulation entre 24h et 48h avant : retenue de 50% de l'acompte</li>
+                    <li>Annulation moins de 24h avant : l'acompte est conservé</li>
+                    <li>Non-présentation : aucun remboursement</li>
+                </ul>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">7. Livraison et Restitution</h2>
+                <p class="mb-4">Nous proposons la livraison du véhicule à l'adresse de votre choix (aéroport, hôtel, domicile) dans la région de Casablanca. Des frais de livraison peuvent s'appliquer selon la distance.</p>
+                <p class="mt-4">Le véhicule doit être restitué avec le même niveau de carburant qu'au départ. Des frais de ravitaillement s'appliquent en cas de non-respect.</p>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">8. Contact</h2>
+                <p>Pour toute question concernant ces conditions, veuillez nous contacter :</p>
+                <ul class="list-disc pl-6 space-y-2 mt-4">
+                    <li>Email : {{ site_settings.email|default:"contact@rentalcars.ma" }}</li>
+                    <li>Téléphone : {{ site_settings.phone|default:"+212 5XX XXX XXX" }}</li>
+                    <li>WhatsApp : {{ site_settings.whatsapp_number|default:"+212 6XX XXX XXX" }}</li>
+                    <li>Adresse : {{ site_settings.address|default:"Casablanca, Maroc" }}</li>
+                </ul>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

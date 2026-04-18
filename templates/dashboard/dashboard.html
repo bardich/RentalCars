@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de Bord - {{ site_settings.site_name|default:"Rental Cars Morocco" }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-100">
+    <div class="bg-slate-900 text-white py-4">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">Tableau de Bord</h1>
+            <a href="{% url 'dashboard:logout' %}" class="text-slate-300 hover:text-white">Déconnexion</a>
+        </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid md:grid-cols-4 gap-6">
+            <div class="card p-6">
+                <h3 class="text-slate-500 text-sm font-medium">Total Voitures</h3>
+                <p class="text-3xl font-bold mt-2">0</p>
+            </div>
+            <div class="card p-6">
+                <h3 class="text-slate-500 text-sm font-medium">Disponibles</h3>
+                <p class="text-3xl font-bold mt-2 text-green-600">0</p>
+            </div>
+            <div class="card p-6">
+                <h3 class="text-slate-500 text-sm font-medium">Réservations</h3>
+                <p class="text-3xl font-bold mt-2 text-amber-600">0</p>
+            </div>
+            <div class="card p-6">
+                <h3 class="text-slate-500 text-sm font-medium">Revenus</h3>
+                <p class="text-3xl font-bold mt-2">0 MAD</p>
+            </div>
+        </div>
+        <div class="mt-8 card p-6">
+            <p class="text-slate-500">Le tableau de bord sera développé dans les phases suivantes.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Réserver {{ car.title }} - {{ site_settings.site_name|default:"Rental Cars Morocco" }}{% endblock %}
+
+{% block content %}
+<div class="py-12 bg-slate-50 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumb -->
+        <nav class="text-sm text-slate-500 mb-6">
+            <a href="{% url 'home' %}" class="hover:text-slate-900">Accueil</a>
+            <span class="mx-2">/</span>
+            <a href="{% url 'fleet:cars' %}" class="hover:text-slate-900">Nos Voitures</a>
+            <span class="mx-2">/</span>
+            <a href="{{ car.get_absolute_url }}" class="hover:text-slate-900">{{ car.title }}</a>
+            <span class="mx-2">/</span>
+            <span class="text-slate-900">Réservation</span>
+        </nav>
+
+        <div class="grid lg:grid-cols-5 gap-8">
+            <!-- Booking Form -->
+            <div class="lg:col-span-3">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h1 class="text-2xl font-bold mb-6">Réserver ce véhicule</h1>
+
+                    {% if form.non_field_errors %}
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        {{ form.non_field_errors.0 }}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" class="space-y-4">
+                        {% csrf_token %}
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.start_date.label }} *</label>
+                                {{ form.start_date }}
+                                {% if form.start_date.errors %}
+                                <p class="text-red-500 text-sm mt-1">{{ form.start_date.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.end_date.label }} *</label>
+                                {{ form.end_date }}
+                                {% if form.end_date.errors %}
+                                <p class="text-red-500 text-sm mt-1">{{ form.end_date.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.customer_name.label }} *</label>
+                            {{ form.customer_name }}
+                            {% if form.customer_name.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.customer_name.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.customer_phone.label }} *</label>
+                            {{ form.customer_phone }}
+                            {% if form.customer_phone.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.customer_phone.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.customer_email.label }}</label>
+                            {{ form.customer_email }}
+                            {% if form.customer_email.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.customer_email.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">{{ form.notes.label }}</label>
+                            {{ form.notes }}
+                        </div>
+
+                        <button type="submit" class="btn-primary w-full">Confirmer la réservation</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Car Summary -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-sm p-6 sticky top-24">
+                    <h2 class="text-lg font-bold mb-4">Résumé</h2>
+
+                    <div class="mb-4">
+                        {% if car.main_image %}
+                        <img src="{{ car.main_image.image.url }}" alt="{{ car.title }}" class="w-full h-32 object-cover rounded-lg">
+                        {% endif %}
+                    </div>
+
+                    <h3 class="font-semibold mb-1">{{ car.title }}</h3>
+                    <p class="text-slate-500 text-sm mb-4">{{ car.brand }} • {{ car.get_transmission_display }} • {{ car.seats }} places</p>
+
+                    <div class="border-t border-slate-100 pt-4 mb-4">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-slate-600">Prix journalier</span>
+                            <span class="font-medium">{{ car.daily_price|intcomma }} MAD</span>
+                        </div>
+                        {% if car.deposit_amount > 0 %}
+                        <div class="flex justify-between mb-2">
+                            <span class="text-slate-600">Caution</span>
+                            <span class="font-medium">{{ car.deposit_amount|intcomma }} MAD</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if next_available %}
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                        <p class="text-green-800 text-sm">
+                            <span class="font-medium">Prochaine disponibilité:</span><br>
+                            {{ next_available|date:'d/m/Y' }}
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    {% if unavailable_dates %}
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                        <p class="text-amber-800 text-sm">
+                            <span class="font-medium">Dates indisponibles:</span><br>
+                            {{ unavailable_dates|length }} jour{{ unavailable_dates|pluralize }} réservé{{ unavailable_dates|pluralize }}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Pass unavailable dates to JavaScript for date picker
+    const unavailableDates = {{ unavailable_dates|safe|default:"[]" }};
+</script>
+{% endblock %}

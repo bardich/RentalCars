@@ -1,0 +1,14 @@
+{
+  "name": "rental-cars-tailwind",
+  "version": "1.0.0",
+  "description": "Tailwind CSS for Rental Cars Morocco",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/styles.css -o ../static/css/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./src/styles.css -o ../static/css/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0"
+  }
+}

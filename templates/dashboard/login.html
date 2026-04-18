@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Connexion - {{ site_settings.site_name|default:"Rental Cars Morocco" }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-slate-100 py-12 px-4">
+    <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-center mb-6">Connexion Admin</h2>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                Identifiants incorrects.
+            </div>
+            {% endif %}
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Nom d'utilisateur</label>
+                <input type="text" name="username" class="input-field" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Mot de passe</label>
+                <input type="password" name="password" class="input-field" required>
+            </div>
+            <input type="hidden" name="next" value="{{ next }}">
+            <button type="submit" class="w-full btn-primary">Se connecter</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

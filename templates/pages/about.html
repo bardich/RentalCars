@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}À Propos - {{ site_settings.site_name|default:"Rental Cars Morocco" }}{% endblock %}
+
+{% block content %}
+<div class="py-12 bg-slate-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">À Propos de Nous</h1>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto">Votre partenaire de confiance pour la location de véhicules premium au Maroc. Nous mettons notre expertise à votre service depuis plus de 10 ans.</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid md:grid-cols-3 gap-8 mb-16">
+            <div class="bg-white rounded-xl shadow-sm p-8 text-center">
+                <div class="text-4xl font-bold text-accent mb-2">{{ stats.cars_count }}+</div>
+                <p class="text-slate-600">Véhicules dans notre flotte</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-8 text-center">
+                <div class="text-4xl font-bold text-accent mb-2">{{ stats.categories_count }}</div>
+                <p class="text-slate-600">Catégories disponibles</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-8 text-center">
+                <div class="text-4xl font-bold text-accent mb-2">10+</div>
+                <p class="text-slate-600">Années d'expérience</p>
+            </div>
+        </div>
+
+        <!-- Story -->
+        <div class="grid lg:grid-cols-2 gap-12 mb-16 items-center">
+            <div>
+                <h2 class="text-3xl font-bold mb-6">Notre Histoire</h2>
+                <div class="prose prose-slate text-slate-600">
+                    <p class="mb-4">Fondée en 2014, Rental Cars Morocco est née d'une vision simple : offrir un service de location de voitures premium, fiable et accessible à tous les voyageurs au Maroc.</p>
+                    <p class="mb-4">De nos débuts modestes avec seulement 5 véhicules, nous avons grandi pour devenir l'un des acteurs majeurs de la location automobile à Casablanca et ses environs.</p>
+                    <p>Notre succès repose sur trois piliers fondamentaux : des véhicules impeccables, un service client exceptionnel, et des prix transparents sans surprise.</p>
+                </div>
+            </div>
+            <div class="bg-slate-200 rounded-xl h-80 flex items-center justify-center">
+                <svg class="w-24 h-24 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Values -->
+        <div class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-12">Nos Valeurs</h2>
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold mb-2">Confiance</h3>
+                    <p class="text-slate-600 text-sm">Des véhicules entretenus et assurés pour votre tranquillité d'esprit.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold mb-2">Service Client</h3>
+                    <p class="text-slate-600 text-sm">Une équipe disponible 24/7 pour vous accompagner.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold mb-2">Transparence</h3>
+                    <p class="text-slate-600 text-sm">Des prix clairs sans frais cachés ni surprises.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold mb-2">Réactivité</h3>
+                    <p class="text-slate-600 text-sm">Réservation rapide et livraison à domicile disponible.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="bg-slate-900 rounded-2xl p-12 text-center text-white">
+            <h2 class="text-3xl font-bold mb-4">Prêt à partir ?</h2>
+            <p class="text-slate-300 mb-8 max-w-2xl mx-auto">Découvrez notre flotte de véhicules et réservez en quelques clics. Profitez d'un service premium à prix compétitif.</p>
+            <div class="flex justify-center gap-4">
+                <a href="{% url 'fleet:cars' %}" class="btn-primary">Voir nos voitures</a>
+                <a href="{% url 'contact' %}" class="btn-secondary">Nous contacter</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
