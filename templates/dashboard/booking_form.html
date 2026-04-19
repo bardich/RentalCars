@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Nouvelle Réservation - Tableau de Bord{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-100">
+    <!-- Header -->
+    <div class="bg-slate-900 text-white py-4 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">Nouvelle Réservation</h1>
+            <div class="flex items-center gap-4">
+                <a href="{% url 'dashboard:home' %}" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm transition">Tableau de bord</a>
+                <a href="{% url 'dashboard:booking_list' %}" class="text-slate-300 hover:text-white text-sm">Retour</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <form method="post" class="bg-white rounded-xl shadow-sm p-6 space-y-6">
+            {% csrf_token %}
+
+            <!-- Car Selection -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Voiture *</label>
+                <select name="car" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Sélectionner une voiture...</option>
+                    {% for car in cars %}
+                    <option value="{{ car.id }}">{{ car.title }} - {{ car.daily_price }} MAD/jour</option>
+                    {% endfor %}
+                </select>
+                {% if not cars %}
+                <p class="text-amber-600 text-sm mt-1">Aucune voiture disponible. Veuillez d'abord ajouter des voitures ou vérifier leur disponibilité.</p>
+                {% endif %}
+            </div>
+
+            <!-- Dates -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Date de début *</label>
+                    <input type="date" name="start_date" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Date de fin *</label>
+                    <input type="date" name="end_date" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+
+            <!-- Customer Info -->
+            <div class="border-t border-slate-100 pt-6">
+                <h3 class="font-bold text-slate-900 mb-4">Informations Client</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Nom complet *</label>
+                        <input type="text" name="customer_name" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Email</label>
+                        <input type="email" name="customer_email" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Téléphone</label>
+                        <input type="tel" name="customer_phone" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Notes / Message</label>
+                <textarea name="message" rows="3" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Notes additionnelles..."></textarea>
+            </div>
+
+            <!-- Submit -->
+            <div class="border-t border-slate-100 pt-6 flex gap-4">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition">Créer la réservation</button>
+                <a href="{% url 'dashboard:booking_list' %}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-2 rounded-lg font-medium transition">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

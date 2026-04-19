@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}{{ car.title }} - Tableau de Bord{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-100">
+    <!-- Header -->
+    <div class="bg-slate-900 text-white py-4 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold truncate">{{ car.title }}</h1>
+            <div class="flex items-center gap-4">
+                <a href="{% url 'dashboard:home' %}" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm transition">Tableau de bord</a>
+                <a href="{% url 'dashboard:car_edit' car.pk %}" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition">Modifier</a>
+                <a href="{% url 'dashboard:car_list' %}" class="text-slate-300 hover:text-white text-sm">Retour</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Main Info -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Images -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold">Images</h2>
+                        <form method="post" action="{% url 'dashboard:car_image_upload' car.pk %}" enctype="multipart/form-data" class="flex items-center gap-2">
+                            {% csrf_token %}
+                            <input type="file" name="images" multiple accept="image/*" class="text-sm" required>
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">Ajouter</button>
+                        </form>
+                    </div>
+                    <div class="grid grid-cols-4 gap-4">
+                        {% if car.main_image %}
+                        <div class="relative group">
+                            <img src="{{ car.main_image.url }}" alt="" class="w-full h-24 object-cover rounded-lg border-2 border-blue-500">
+                            <span class="absolute top-1 left-1 bg-blue-500 text-white text-xs px-2 py-0.5 rounded">Principale</span>
+                        </div>
+                        {% endif %}
+                        {% for image in car.images.all %}
+                        <div class="relative group">
+                            <img src="{{ image.image.url }}" alt="" class="w-full h-24 object-cover rounded-lg">
+                            <form method="post" action="{% url 'dashboard:car_image_delete' image.pk %}" class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition">
+                                {% csrf_token %}
+                                <button type="submit" class="bg-red-500 text-white p-1 rounded hover:bg-red-600">
+                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Car Details -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="font-bold mb-4">Détails du véhicule</h2>
+                    <div class="grid md:grid-cols-3 gap-4 text-sm">
+                        <div class="flex justify-between py-2 border-b border-slate-100">
+                            <span class="text-slate-500">Catégorie</span>
+                            <span class="font-medium">{{ car.category.name }}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-slate-100">
+                            <span class="text-slate-500">Marque</span>
+                            <span class="font-medium">{{ car.brand.name|default:"-" }}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-slate-100">
+                            <span class="text-slate-500">Année</span>
+                            <span class="font-medium">{{ car.year|default:"-" }}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-slate-100">
+                            <span class="text-slate-500">Sièges</span>
+                            <span class="font-medium">{{ car.seats }}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-slate-100">
+                            <span class="text-slate-500">Transmission</span>
+                            <span class="font-medium">{{ car.get_transmission_display }}</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-slate-100">
+                            <span class="text-slate-500">Carburant</span>
+                            <span class="font-medium">{{ car.get_fuel_type_display }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="font-bold mb-4">Tarifs</h2>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="bg-blue-50 rounded-lg p-4 text-center">
+                            <p class="text-sm text-slate-600">Journalier</p>
+                            <p class="text-2xl font-bold text-blue-600">{{ car.daily_price|intcomma }} MAD</p>
+                        </div>
+                        <div class="bg-green-50 rounded-lg p-4 text-center">
+                            <p class="text-sm text-slate-600">Hebdomadaire</p>
+                            <p class="text-2xl font-bold text-green-600">{{ car.weekly_price|intcomma|default:"-" }} {% if car.weekly_price %}MAD{% endif %}</p>
+                        </div>
+                        <div class="bg-purple-50 rounded-lg p-4 text-center">
+                            <p class="text-sm text-slate-600">Mensuel</p>
+                            <p class="text-2xl font-bold text-purple-600">{{ car.monthly_price|intcomma|default:"-" }} {% if car.monthly_price %}MAD{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                {% if car.description %}
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="font-bold mb-4">Description</h2>
+                    <p class="text-slate-600">{{ car.description|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Status Management -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="font-bold mb-4">Gestion du statut</h2>
+                    <form method="post" class="space-y-4">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update_status">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Statut actuel</label>
+                            <select name="availability_status" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if car.availability_status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition">Mettre à jour</button>
+                    </form>
+                </div>
+
+                <!-- Available From -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="font-bold mb-4">Disponible à partir de</h2>
+                    <form method="post" class="space-y-4">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="set_available_from">
+                        <input type="date" name="available_from" value="{{ car.available_from|date:'Y-m-d'|default:'' }}" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <button type="submit" class="w-full bg-slate-600 hover:bg-slate-700 text-white py-2 rounded-lg font-medium transition">Enregistrer</button>
+                    </form>
+                </div>
+
+                <!-- Featured Toggle -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="font-bold mb-4">Options</h2>
+                    <form method="post" class="flex items-center justify-between">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="toggle_featured">
+                        <span class="text-sm">{% if car.featured %}En vedette{% else %}Mettre en vedette{% endif %}</span>
+                        <button type="submit" class="{% if car.featured %}bg-amber-500 hover:bg-amber-600{% else %}bg-slate-200 hover:bg-slate-300{% endif %} px-4 py-2 rounded-lg text-sm font-medium transition">
+                            {% if car.featured %}Retirer{% else %}Ajouter{% endif %}
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="font-bold mb-4">Informations</h2>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Active</span>
+                            <span class="{% if car.active %}text-green-600{% else %}text-red-600{% endif %}">{{ car.active|yesno:"Oui,Non" }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Créée le</span>
+                            <span>{{ car.created_at|date:"d/m/Y" }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Images</span>
+                            <span>{{ car.images.count }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delete -->
+                <a href="{% url 'dashboard:car_delete' car.pk %}" class="block bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 text-center py-3 rounded-xl font-medium transition">Supprimer cette voiture</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

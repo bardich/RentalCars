@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if car %}Modifier{% else %}Ajouter{% endif %} une Voiture - Tableau de Bord{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-100">
+    <!-- Header -->
+    <div class="bg-slate-900 text-white py-4 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">{% if car %}Modifier{% else %}Ajouter{% endif %} une Voiture</h1>
+            <div class="flex items-center gap-4">
+                <a href="{% url 'dashboard:home' %}" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm transition">Tableau de bord</a>
+                <a href="{% url 'dashboard:car_list' %}" class="text-slate-300 hover:text-white text-sm">Retour</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <form method="post" enctype="multipart/form-data" class="bg-white rounded-xl shadow-sm p-6 space-y-6">
+            {% csrf_token %}
+
+            <!-- Basic Info -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Titre</label>
+                    <input type="text" name="title" value="{{ car.title|default:'' }}" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Catégorie</label>
+                    <select name="category" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Sélectionner...</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if car.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Marque</label>
+                    <select name="brand" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Sélectionner...</option>
+                        {% for brand in brands %}
+                        <option value="{{ brand.id }}" {% if car.brand_id == brand.id %}selected{% endif %}>{{ brand.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Année</label>
+                    <input type="number" name="year" value="{{ car.year|default:'' }}" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Sièges</label>
+                    <input type="number" name="seats" value="{{ car.seats|default:'5' }}" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Transmission</label>
+                    <select name="transmission" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        {% for value, label in transmission_choices %}
+                        <option value="{{ value }}" {% if car.transmission == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Carburant</label>
+                    <select name="fuel_type" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        {% for value, label in fuel_choices %}
+                        <option value="{{ value }}" {% if car.fuel_type == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Pricing -->
+            <div class="border-t border-slate-100 pt-6">
+                <h3 class="font-bold text-slate-900 mb-4">Tarifs (MAD)</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Prix journalier *</label>
+                        <input type="number" name="daily_price" value="{{ car.daily_price|default:'' }}" required class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Prix hebdomadaire</label>
+                        <input type="number" name="weekly_price" value="{{ car.weekly_price|default:'' }}" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Prix mensuel</label>
+                        <input type="number" name="monthly_price" value="{{ car.monthly_price|default:'' }}" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="border-t border-slate-100 pt-6">
+                <h3 class="font-bold text-slate-900 mb-4">Équipements</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {% for feature in features %}
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="features" value="{{ feature.id }}" {% if feature in car.features.all %}checked{% endif %} class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm">{{ feature.name }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="border-t border-slate-100 pt-6">
+                <label class="block text-sm font-medium text-slate-700 mb-2">Description</label>
+                <textarea name="description" rows="4" class="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ car.description|default:'' }}</textarea>
+            </div>
+
+            <!-- Images -->
+            <div class="border-t border-slate-100 pt-6">
+                <h3 class="font-bold text-slate-900 mb-4">Images</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Image principale</label>
+                        {% if car.main_image %}
+                        <img src="{{ car.main_image.url }}" alt="" class="w-full h-32 object-cover rounded-lg mb-2">
+                        {% endif %}
+                        <input type="file" name="main_image" accept="image/*" class="w-full text-sm">
+                    </div>
+                    {% if not car %}
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Images supplémentaires</label>
+                        <input type="file" name="images" multiple accept="image/*" class="w-full text-sm">
+                        <p class="text-xs text-slate-500 mt-1">Vous pouvez sélectionner plusieurs images</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Options -->
+            <div class="border-t border-slate-100 pt-6 flex items-center gap-6">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="featured" {% if car.featured %}checked{% endif %} class="rounded border-slate-300 text-amber-500 focus:ring-amber-500">
+                    <span class="text-sm font-medium">Mettre en vedette</span>
+                </label>
+                {% if car %}
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="active" {% if car.active %}checked{% endif %} class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                    <span class="text-sm font-medium">Voiture active</span>
+                </label>
+                {% endif %}
+            </div>
+
+            <!-- Submit -->
+            <div class="border-t border-slate-100 pt-6 flex gap-4">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition">
+                    {% if car %}Enregistrer les modifications{% else %}Créer la voiture{% endif %}
+                </button>
+                <a href="{% url 'dashboard:car_list' %}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-2 rounded-lg font-medium transition">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

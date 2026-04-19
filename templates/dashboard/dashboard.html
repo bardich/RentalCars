@@ -1,36 +1,269 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block title %}Tableau de Bord - {{ site_settings.site_name|default:"Rental Cars Morocco" }}{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-slate-100">
-    <div class="bg-slate-900 text-white py-4">
+    <!-- Header -->
+    <div class="bg-slate-900 text-white py-4 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold">Tableau de Bord</h1>
-            <a href="{% url 'dashboard:logout' %}" class="text-slate-300 hover:text-white">Déconnexion</a>
+            <div class="flex items-center gap-4">
+                <h1 class="text-xl font-bold">Tableau de Bord</h1>
+                <span class="text-white font-medium text-sm bg-slate-700 px-3 py-1 rounded-lg">{{ today|date:"d/m/Y" }}</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="/" class="text-slate-300 hover:text-white text-sm" target="_blank">Voir le site</a>
+                <form method="post" action="{% url 'dashboard:logout' %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="text-slate-300 hover:text-white text-sm bg-transparent border-none cursor-pointer">Déconnexion</button>
+                </form>
+            </div>
         </div>
     </div>
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <div class="grid md:grid-cols-4 gap-6">
-            <div class="card p-6">
-                <h3 class="text-slate-500 text-sm font-medium">Total Voitures</h3>
-                <p class="text-3xl font-bold mt-2">0</p>
-            </div>
-            <div class="card p-6">
-                <h3 class="text-slate-500 text-sm font-medium">Disponibles</h3>
-                <p class="text-3xl font-bold mt-2 text-green-600">0</p>
-            </div>
-            <div class="card p-6">
-                <h3 class="text-slate-500 text-sm font-medium">Réservations</h3>
-                <p class="text-3xl font-bold mt-2 text-amber-600">0</p>
-            </div>
-            <div class="card p-6">
-                <h3 class="text-slate-500 text-sm font-medium">Revenus</h3>
-                <p class="text-3xl font-bold mt-2">0 MAD</p>
+
+    <!-- Navigation -->
+    <div class="bg-white shadow-sm border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex gap-1 py-2">
+                <a href="{% url 'dashboard:home' %}" class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-100 text-blue-700">Vue d'ensemble</a>
+                <a href="{% url 'dashboard:car_list' %}" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">Voitures</a>
+                <a href="{% url 'dashboard:category_list' %}" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">Catégories</a>
+                <a href="{% url 'dashboard:brand_list' %}" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">Marques</a>
+                <a href="{% url 'dashboard:booking_list' %}" class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100">Réservations</a>
             </div>
         </div>
-        <div class="mt-8 card p-6">
-            <p class="text-slate-500">Le tableau de bord sera développé dans les phases suivantes.</p>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Overview Stats Row 1 -->
+        <div class="grid md:grid-cols-4 gap-6 mb-6">
+            <!-- Total Cars -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-500 text-sm font-medium">Total Voitures</p>
+                        <p class="text-3xl font-bold mt-1">{{ total_cars }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Cars -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-500 text-sm font-medium">Disponibles</p>
+                        <p class="text-3xl font-bold mt-1 text-green-600">{{ available_cars }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reserved Cars -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-amber-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-500 text-sm font-medium">Réservées</p>
+                        <p class="text-3xl font-bold mt-1 text-amber-600">{{ reserved_cars }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rented Cars -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-500 text-sm font-medium">En location</p>
+                        <p class="text-3xl font-bold mt-1 text-purple-600">{{ rented_cars }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overview Stats Row 2 -->
+        <div class="grid md:grid-cols-4 gap-6 mb-8">
+            <!-- Maintenance Cars -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-red-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-500 text-sm font-medium">En maintenance</p>
+                        <p class="text-3xl font-bold mt-1 text-red-600">{{ maintenance_cars }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Bookings -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-indigo-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-500 text-sm font-medium">Total Réservations</p>
+                        <p class="text-3xl font-bold mt-1 text-indigo-600">{{ total_bookings }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Bookings -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-cyan-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-500 text-sm font-medium">Réservations Actives</p>
+                        <p class="text-3xl font-bold mt-1 text-cyan-600">{{ active_bookings }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Revenue -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-emerald-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-500 text-sm font-medium">Revenus du mois</p>
+                        <p class="text-3xl font-bold mt-1 text-emerald-600">{{ monthly_revenue|intcomma }} MAD</p>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Recent Bookings -->
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-sm">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Réservations récentes</h2>
+                    <a href="{% url 'dashboard:booking_list' %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Voir tout</a>
+                </div>
+                <div class="divide-y divide-slate-100">
+                    {% for booking in recent_bookings %}
+                    <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium">{{ booking.car.title }}</p>
+                                <p class="text-sm text-slate-500">{{ booking.customer_name }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full
+                                {% if booking.booking_status == 'pending' %}bg-amber-100 text-amber-700
+                                {% elif booking.booking_status == 'confirmed' %}bg-green-100 text-green-700
+                                {% elif booking.booking_status == 'completed' %}bg-blue-100 text-blue-700
+                                {% elif booking.booking_status == 'cancelled' %}bg-red-100 text-red-700
+                                {% else %}bg-slate-100 text-slate-700{% endif %}">
+                                {{ booking.get_booking_status_display }}
+                            </span>
+                            <p class="text-sm text-slate-700 font-medium mt-1">{{ booking.start_date|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="p-8 text-center text-slate-500">
+                        <p>Aucune réservation</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Upcoming Returns -->
+            <div class="bg-white rounded-xl shadow-sm">
+                <div class="p-6 border-b border-slate-100">
+                    <h2 class="text-lg font-bold">Retours à venir (7j)</h2>
+                </div>
+                <div class="divide-y divide-slate-100">
+                    {% for booking in upcoming_returns %}
+                    <div class="p-4 hover:bg-slate-50 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-medium">{{ booking.car.title }}</span>
+                            <span class="text-sm text-slate-700 font-medium">{{ booking.end_date|date:"d/m/Y" }}</span>
+                        </div>
+                        <p class="text-sm text-slate-600">{{ booking.customer_name }}</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-xs text-amber-600">
+                                {% if booking.end_date == today %}Aujourd'hui
+                                {% else %}Dans {{ booking.end_date|timeuntil:today }}{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="p-8 text-center text-slate-500">
+                        <p>Aucun retour prévu</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Status Overview -->
+        <div class="mt-8 bg-white rounded-xl shadow-sm p-6">
+            <h2 class="text-lg font-bold mb-4">État des réservations</h2>
+            <div class="grid grid-cols-5 gap-4 text-center">
+                <div class="p-4 bg-amber-50 rounded-lg">
+                    <p class="text-2xl font-bold text-amber-600">{{ pending_bookings }}</p>
+                    <p class="text-sm text-slate-600">En attente</p>
+                </div>
+                <div class="p-4 bg-green-50 rounded-lg">
+                    <p class="text-2xl font-bold text-green-600">{{ confirmed_bookings }}</p>
+                    <p class="text-sm text-slate-600">Confirmées</p>
+                </div>
+                <div class="p-4 bg-blue-50 rounded-lg">
+                    <p class="text-2xl font-bold text-blue-600">{{ completed_bookings }}</p>
+                    <p class="text-sm text-slate-600">Terminées</p>
+                </div>
+                <div class="p-4 bg-red-50 rounded-lg">
+                    <p class="text-2xl font-bold text-red-600">{{ cancelled_bookings }}</p>
+                    <p class="text-sm text-slate-600">Annulées</p>
+                </div>
+                <div class="p-4 bg-emerald-50 rounded-lg">
+                    <p class="text-2xl font-bold text-emerald-600">{{ total_revenue|floatformat:"0"|intcomma }}</p>
+                    <p class="text-sm text-slate-600">Revenus totaux (MAD)</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
