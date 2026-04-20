@@ -1,113 +1,346 @@
 {% extends 'base.html' %}
 {% load humanize %}
 
-{% block title %}Gestion des Voitures - Tableau de Bord{% endblock %}
+{% block title %}Gestion du Parc | Location Auto Premium{% endblock %}
+
+{% block extra_css %}
+<style>
+  .fleet-header { background: white; border-bottom: 1px solid rgba(229,231,235,0.8); position: sticky; top: 0; z-index: 40; }
+  .fleet-container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+  .fleet-flex { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .fleet-nav { display: flex; align-items: center; gap: 24px; }
+  .fleet-btn { display: inline-flex; align-items: center; gap: 8px; background: #111827; color: white; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; }
+  .fleet-btn:hover { background: #1f2937; }
+  .fleet-tabs { display: flex; align-items: center; gap: 4px; background: white; border-radius: 16px; padding: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid rgba(229,231,235,0.6); }
+  .fleet-tab { padding: 10px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; text-decoration: none; color: #4b5563; }
+  .fleet-tab:hover { color: #111827; background: #f9fafb; }
+  .fleet-tab.active { background: #111827; color: white; }
+  .fleet-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 24px; }
+  @media (min-width: 768px) { .fleet-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .fleet-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1280px) { .fleet-grid { grid-template-columns: repeat(4, 1fr); } }
+  .fleet-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid #f3f4f6; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .fleet-card:hover { box-shadow: 0 20px 25px rgba(0,0,0,0.1); transform: translateY(-4px); transition: all 0.3s; }
+  .fleet-img { position: relative; aspect-ratio: 4/3; overflow: hidden; background: #f3f4f6; }
+  .fleet-img img { width: 100%; height: 100%; object-fit: cover; }
+  .fleet-badge { position: absolute; top: 12px; right: 12px; padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600; color: white; }
+  .fleet-badge.available { background: rgba(16,185,129,0.95); }
+  .fleet-badge.rented { background: rgba(139,92,246,0.95); }
+  .fleet-badge.reserved { background: rgba(245,158,11,0.95); }
+  .fleet-badge.maintenance { background: rgba(244,63,94,0.95); }
+  .fleet-content { padding: 20px; }
+  .fleet-title { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+  .fleet-title h3 { font-weight: 600; color: #111827; margin: 0; font-size: 16px; }
+  .fleet-actions { display: flex; gap: 12px; margin-top: 16px; }
+  .fleet-actions a { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border-radius: 12px; font-size: 14px; font-weight: 500; text-decoration: none; }
+  .fleet-actions .view { border: 1px solid #e5e7eb; color: #374151; }
+  .fleet-actions .view:hover { border-color: #111827; background: #111827; color: white; }
+  .fleet-actions .edit { background: #111827; color: white; }
+  .fleet-actions .edit:hover { background: #1f2937; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-slate-100">
-    <!-- Header -->
-    <div class="bg-slate-900 text-white py-4 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold">Gestion des Voitures</h1>
-            <div class="flex items-center gap-4">
-                <a href="{% url 'dashboard:home' %}" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm transition">Tableau de bord</a>
-                <a href="{% url 'dashboard:booking_list' %}" class="text-slate-300 hover:text-white text-sm">Réservations</a>
+<div style="min-height: 100vh; background: linear-gradient(135deg, #f9fafb 0%, #fff 50%, #f3f4f6 100%); font-family: system-ui, -apple-system, sans-serif;">
+<!-- Critical inline styles for immediate rendering -->
+<style>
+  /* Fleet Grid - Critical */
+  .fleet-grid { display: grid !important; grid-template-columns: repeat(1, 1fr) !important; gap: 24px !important; }
+  @media (min-width: 768px) { .fleet-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+  @media (min-width: 1024px) { .fleet-grid { grid-template-columns: repeat(3, 1fr) !important; } }
+  @media (min-width: 1280px) { .fleet-grid { grid-template-columns: repeat(4, 1fr) !important; } }
+  
+  /* Fleet Card - Clean & Spacious */
+  .fleet-card { 
+    background: white !important; 
+    border-radius: 20px !important; 
+    overflow: hidden !important; 
+    border: 1px solid #e5e7eb !important; 
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03) !important;
+    transition: all 0.3s ease !important;
+  }
+  .fleet-card:hover { 
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08), 0 10px 10px -5px rgba(0,0,0,0.02) !important; 
+    transform: translateY(-4px) !important;
+  }
+  
+  /* Fleet Image - Clean */
+  .fleet-img { 
+    position: relative !important; 
+    aspect-ratio: 16/10 !important; 
+    overflow: hidden !important; 
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important; 
+  }
+  .fleet-img img { 
+    width: 100% !important; 
+    height: 100% !important; 
+    object-fit: cover !important; 
+    transition: transform 0.5s ease !important;
+  }
+  .fleet-card:hover .fleet-img img {
+    transform: scale(1.05) !important;
+  }
+  
+  /* Fleet Badge - Clean */
+  .fleet-badge { 
+    position: absolute !important; 
+    top: 16px !important; 
+    right: 16px !important; 
+    padding: 8px 16px !important; 
+    border-radius: 9999px !important; 
+    font-size: 11px !important; 
+    font-weight: 600 !important; 
+    color: white !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+  }
+  .fleet-badge.available { background: #10b981 !important; }
+  .fleet-badge.rented { background: #8b5cf6 !important; }
+  .fleet-badge.reserved { background: #f59e0b !important; }
+  .fleet-badge.maintenance { background: #f43f5e !important; }
+  
+  /* Fleet Content - Spacious */
+  .fleet-content { padding: 24px !important; }
+  .fleet-title { 
+    display: flex !important; 
+    justify-content: space-between !important; 
+    align-items: flex-start !important; 
+    gap: 12px !important; 
+    margin-bottom: 12px !important; 
+  }
+  .fleet-title h3 { 
+    font-weight: 600 !important; 
+    color: #111827 !important; 
+    margin: 0 !important; 
+    font-size: 17px !important; 
+    line-height: 1.3 !important;
+  }
+  
+  /* Fleet Actions - Clean */
+  .fleet-actions { 
+    display: flex !important; 
+    gap: 12px !important; 
+    margin-top: 20px !important; 
+  }
+  .fleet-actions a { 
+    flex: 1 !important; 
+    display: inline-flex !important; 
+    align-items: center !important; 
+    justify-content: center !important; 
+    gap: 8px !important; 
+    padding: 12px 20px !important; 
+    border-radius: 10px !important; 
+    font-size: 13px !important; 
+    font-weight: 500 !important; 
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+  }
+  .fleet-actions .view { 
+    border: 1px solid #d1d5db !important; 
+    color: #4b5563 !important; 
+    background: white !important;
+  }
+  .fleet-actions .view:hover { 
+    border-color: #111827 !important; 
+    background: #111827 !important; 
+    color: white !important; 
+  }
+  .fleet-actions .edit { 
+    background: #111827 !important; 
+    color: white !important; 
+  }
+  .fleet-actions .edit:hover { 
+    background: #374151 !important; 
+  }
+  
+  /* Fleet Tabs - Critical */
+  .fleet-tabs { display: flex !important; align-items: center !important; gap: 4px !important; background: white !important; border-radius: 16px !important; padding: 6px !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; border: 1px solid rgba(229,231,235,0.6) !important; }
+  .fleet-tab { padding: 10px 20px !important; border-radius: 12px !important; font-size: 14px !important; font-weight: 500 !important; text-decoration: none !important; color: #4b5563 !important; display: inline-block !important; }
+  .fleet-tab:hover { color: #111827 !important; background: #f9fafb !important; }
+  .fleet-tab.active { background: #111827 !important; color: white !important; }
+</style>
+    <!-- Premium Header -->
+    <header style="background: white; border-bottom: 1px solid rgba(229,231,235,0.8); position: sticky; top: 0; z-index: 40;">
+        <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; height: 64px;">
+                <div style="display: flex; align-items: center; gap: 32px;">
+                    <a href="{% url 'dashboard:home' %}" style="display: flex; align-items: center; gap: 8px; color: #111827; text-decoration: none;">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span style="font-weight: 500; font-size: 14px;">Dashboard</span>
+                    </a>
+                    <h1 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0;">Gestion du Parc</h1>
+                </div>
+                <nav style="display: flex; align-items: center; gap: 24px;">
+                    <a href="{% url 'dashboard:booking_list' %}" style="color: #6b7280; text-decoration: none; font-size: 14px; font-weight: 500;">Réservations</a>
+                    <a href="{% url 'dashboard:car_create' %}" style="display: inline-flex; align-items: center; gap: 8px; background: #111827; color: white; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none;">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Ajouter Véhicule
+                    </a>
+                </nav>
             </div>
         </div>
-    </div>
+    </header>
 
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Add Car Button -->
-        <div class="mb-4">
-            <a href="{% url 'dashboard:car_create' %}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                Ajouter une voiture
-            </a>
-        </div>
+    <main style="max-width: 1280px; margin: 0 auto; padding: 40px 24px;">
+        <!-- Filters Bar -->
+        <div style="margin-bottom: 40px;">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+                <!-- Status Tabs -->
+                <div class="fleet-tabs">
+                    <a href="{% url 'dashboard:car_list' %}" class="fleet-tab {% if not current_status %}active{% endif %}">
+                        Tous
+                    </a>
+                    {% for value, label in status_choices %}
+                    <a href="?status={{ value }}" class="fleet-tab {% if current_status == value %}active{% endif %}">
+                        {{ label }}
+                    </a>
+                    {% endfor %}
+                </div>
 
-        <!-- Filters -->
-        <div class="bg-white rounded-xl shadow-sm p-4 mb-6 flex flex-wrap gap-4">
-            <div class="flex gap-2">
-                <a href="{% url 'dashboard:car_list' %}" class="px-4 py-2 rounded-lg text-sm font-medium {% if not current_status %}bg-blue-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
-                    Toutes
-                </a>
-                {% for value, label in status_choices %}
-                <a href="?status={{ value }}" class="px-4 py-2 rounded-lg text-sm font-medium {% if current_status == value %}bg-blue-500 text-white{% else %}bg-slate-100 text-slate-700 hover:bg-slate-200{% endif %}">
-                    {{ label }}
-                </a>
-                {% endfor %}
+                <!-- Category Dropdown -->
+                <div style="position: relative;">
+                    <select onchange="window.location.href='?category=' + this.value + '{% if current_status %}&status={{ current_status }}{% endif %}'" 
+                            style="appearance: none; background: white; padding: 10px 48px 10px 16px; border-radius: 12px; border: 1px solid #e5e7eb; font-size: 14px; font-weight: 500; color: #374151; cursor: pointer; min-width: 180px;">
+                        <option value="">Toutes les Catégories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if current_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #9ca3af;">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                </div>
             </div>
-            <select onchange="window.location.href='?category=' + this.value + '{% if current_status %}&status={{ current_status }}{% endif %}'" class="px-4 py-2 rounded-lg border border-slate-200 text-sm">
-                <option value="">Toutes les catégories</option>
-                {% for cat in categories %}
-                <option value="{{ cat.id }}" {% if current_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
-                {% endfor %}
-            </select>
         </div>
 
         <!-- Cars Grid -->
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div class="fleet-grid">
             {% for car in cars %}
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition">
-                <div class="relative">
+            <article class="fleet-card">
+                <!-- Image Container -->
+                <div class="fleet-img">
                     {% if car.main_image %}
-                    <img src="{{ car.main_image.url }}" alt="{{ car.title }}" class="w-full h-40 object-cover">
+                    <img src="{{ car.main_image.url }}" alt="{{ car.title }}" style="width: 100%; height: 100%; object-fit: cover;">
                     {% else %}
-                    <div class="w-full h-40 bg-slate-200 flex items-center justify-center">
-                        <svg class="w-12 h-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);">
+                        <svg width="64" height="64" fill="none" stroke="#d1d5db" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                     </div>
                     {% endif %}
+                    
+                    <!-- Featured Badge -->
                     {% if car.featured %}
-                    <span class="absolute top-2 left-2 bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded">Vedette</span>
+                    <div style="position: absolute; top: 12px; left: 12px; background: #fbbf24; color: #713f12; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 9999px; box-shadow: 0 4px 6px rgba(251, 191, 36, 0.3);">
+                        En Vedette
+                    </div>
                     {% endif %}
-                    <span class="absolute top-2 right-2 px-2 py-1 text-xs font-medium rounded-full
-                        {% if car.availability_status == 'available' %}bg-green-100 text-green-700
-                        {% elif car.availability_status == 'rented' %}bg-purple-100 text-purple-700
-                        {% elif car.availability_status == 'reserved' %}bg-amber-100 text-amber-700
-                        {% elif car.availability_status == 'maintenance' %}bg-red-100 text-red-700
-                        {% else %}bg-slate-100 text-slate-700{% endif %}">
+                    
+                    <!-- Status Badge -->
+                    <div class="fleet-badge {{ car.availability_status }}">
                         {{ car.get_availability_status_display }}
-                    </span>
-                </div>
-                <div class="p-4">
-                    <h3 class="font-bold text-slate-900 truncate">{{ car.title }}</h3>
-                    <p class="text-sm text-slate-500">{{ car.category.name }}</p>
-                    <div class="flex items-center justify-between mt-3">
-                        <span class="text-lg font-bold text-blue-600">{{ car.daily_price|intcomma }} MAD</span>
-                        <span class="text-sm text-slate-500">{{ car.year }}</span>
-                    </div>
-                    <div class="flex gap-2 mt-4">
-                        <a href="{% url 'dashboard:car_detail' car.pk %}" class="flex-1 bg-slate-100 hover:bg-slate-200 text-center py-2 rounded-lg text-sm font-medium transition">Détails</a>
-                        <a href="{% url 'dashboard:car_edit' car.pk %}" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-700 text-center py-2 rounded-lg text-sm font-medium transition">Modifier</a>
                     </div>
                 </div>
-            </div>
+                
+                <!-- Content -->
+                <div class="fleet-content">
+                    <div class="fleet-title">
+                        <h3>{{ car.title }}</h3>
+                        <span style="font-size: 13px; color: #9ca3af; font-weight: 500;">{{ car.year }}</span>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #6b7280; margin: 8px 0 16px 0; line-height: 1.5;">{{ car.category.name }}</p>
+                    
+                    <!-- Price -->
+                    <div style="display: flex; align-items: baseline; gap: 6px; margin: 16px 0;">
+                        <span style="font-size: 26px; font-weight: 700; color: #111827; letter-spacing: -0.5px;">{{ car.daily_price|intcomma }}</span>
+                        <span style="font-size: 14px; color: #6b7280; font-weight: 500;">MAD</span>
+                        <span style="font-size: 13px; color: #9ca3af; margin-left: 2px;">/jour</span>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="fleet-actions">
+                        <a href="{% url 'dashboard:car_detail' car.pk %}" class="view">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            Voir
+                        </a>
+                        <a href="{% url 'dashboard:car_edit' car.pk %}" class="edit">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                            Modifier
+                        </a>
+                    </div>
+                </div>
+            </article>
             {% empty %}
-            <div class="col-span-full text-center py-12">
-                <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-                </svg>
-                <p class="text-slate-500">Aucune voiture trouvée</p>
-                <a href="{% url 'dashboard:car_create' %}" class="inline-block mt-4 text-blue-600 hover:text-blue-700 font-medium">Ajouter une voiture</a>
+            <div style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 16px;">
+                <div style="width: 96px; height: 96px; background: #f3f4f6; border-radius: 9999px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                    <svg width="48" height="48" fill="none" stroke="#d1d5db" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/>
+                    </svg>
+                </div>
+                <h3 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0 0 8px 0;">Aucun véhicule trouvé</h3>
+                <p style="color: #6b7280; margin: 0 0 24px 0; text-align: center; max-width: 384px;">Commencez par ajouter votre premier véhicule au parc.</p>
+                <a href="{% url 'dashboard:car_create' %}" class="fleet-btn" style="padding: 12px 24px;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Ajouter Véhicule
+                </a>
             </div>
             {% endfor %}
         </div>
 
-        <!-- Pagination -->
+        <!-- Premium Pagination -->
         {% if cars.has_other_pages %}
-        <div class="mt-8 flex justify-center gap-2">
+        <div style="margin-top: 48px; display: flex; align-items: center; justify-content: center; gap: 12px;">
             {% if cars.has_previous %}
-            <a href="?page={{ cars.previous_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}" class="px-4 py-2 bg-white rounded-lg shadow-sm text-slate-700 hover:bg-slate-50">Précédent</a>
+            <a href="?page={{ cars.previous_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}" 
+               style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 12px; background: white; border: 1px solid #e5e7eb; font-size: 14px; font-weight: 500; color: #374151; text-decoration: none;">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Précédent
+            </a>
             {% endif %}
-            <span class="px-4 py-2 bg-blue-500 text-white rounded-lg">Page {{ cars.number }} sur {{ cars.paginator.num_pages }}</span>
+            
+            <div style="display: flex; align-items: center; gap: 4px; padding: 0 4px;">
+                {% for num in cars.paginator.page_range %}
+                    {% if num == cars.number %}
+                    <span style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: #111827; color: white; font-size: 14px; font-weight: 600; box-shadow: 0 4px 6px rgba(17, 24, 39, 0.2);">
+                        {{ num }}
+                    </span>
+                    {% elif num > cars.number|add:'-3' and num < cars.number|add:'3' %}
+                    <a href="?page={{ num }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}" 
+                       style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-size: 14px; font-weight: 500; color: #4b5563; text-decoration: none; background: white;">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
             {% if cars.has_next %}
-            <a href="?page={{ cars.next_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}" class="px-4 py-2 bg-white rounded-lg shadow-sm text-slate-700 hover:bg-slate-50">Suivant</a>
+            <a href="?page={{ cars.next_page_number }}{% if current_status %}&status={{ current_status }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}" 
+               style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 12px; background: white; border: 1px solid #e5e7eb; font-size: 14px; font-weight: 500; color: #374151; text-decoration: none;">
+                Suivant
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>
             {% endif %}
         </div>
         {% endif %}
-    </div>
+    </main>
 </div>
 {% endblock %}

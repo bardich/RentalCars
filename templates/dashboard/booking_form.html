@@ -71,9 +71,19 @@
             </div>
 
             <!-- Submit -->
-            <div class="border-t border-slate-100 pt-6 flex gap-4">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition">Créer la réservation</button>
-                <a href="{% url 'dashboard:booking_list' %}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-2 rounded-lg font-medium transition">Annuler</a>
+            <div style="border-top: 1px solid #f1f5f9; padding-top: 24px; display: flex; gap: 16px;">
+                <button type="submit" style="display: inline-flex !important; align-items: center !important; gap: 8px !important; background: #111827 !important; color: white !important; padding: 12px 24px !important; border-radius: 10px !important; font-size: 14px !important; font-weight: 500 !important; border: none !important; cursor: pointer !important; transition: all 0.2s ease !important; text-shadow: 0 1px 2px rgba(0,0,0,0.1) !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1) !important;">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Créer la réservation
+                </button>
+                <a href="{% url 'dashboard:booking_list' %}" style="display: inline-flex !important; align-items: center !important; gap: 8px !important; background: white !important; color: #374151 !important; padding: 12px 24px !important; border-radius: 10px !important; font-size: 14px !important; font-weight: 500 !important; border: 1px solid #d1d5db !important; text-decoration: none !important; transition: all 0.2s ease !important;">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Annuler
+                </a>
             </div>
         </form>
     </div>

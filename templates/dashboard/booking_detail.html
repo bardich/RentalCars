@@ -4,255 +4,286 @@
 {% block title %}Détail Réservation #{{ booking.id }} - Tableau de Bord{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-slate-100">
+<div style="min-height: 100vh; background: linear-gradient(135deg, #f9fafb 0%, #fff 50%, #f3f4f6 100%); font-family: system-ui, -apple-system, sans-serif;">
     <!-- Header -->
-    <div class="bg-slate-900 text-white py-4 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold">Réservation #{{ booking.id }}</h1>
-            <div class="flex items-center gap-4">
-                <a href="{% url 'dashboard:home' %}" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm transition">Tableau de bord</a>
-                <a href="{% url 'dashboard:booking_list' %}" class="text-slate-300 hover:text-white text-sm">Retour</a>
+    <header style="background: white; border-bottom: 1px solid rgba(229,231,235,0.8); position: sticky; top: 0; z-index: 40;">
+        <div style="max-width: 1280px; margin: 0 auto; padding: 16px 24px;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 32px;">
+                    <a href="{% url 'dashboard:home' %}" style="display: flex; align-items: center; gap: 8px; color: #111827; text-decoration: none;">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span style="font-weight: 500; font-size: 14px;">Dashboard</span>
+                    </a>
+                    <div style="width: 1px; height: 24px; background: #e5e7eb;"></div>
+                    <h1 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0;">Réservation #{{ booking.id }}</h1>
+                </div>
+                <nav style="display: flex; align-items: center; gap: 24px;">
+                    <a href="{% url 'dashboard:booking_list' %}" style="color: #6b7280; text-decoration: none; font-size: 14px; font-weight: 500;">Réservations</a>
+                    <a href="{% url 'dashboard:car_list' %}" style="color: #6b7280; text-decoration: none; font-size: 14px; font-weight: 500;">Parc</a>
+                </nav>
             </div>
         </div>
-    </div>
+    </header>
 
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <div class="grid lg:grid-cols-2 gap-8">
-            <!-- Booking Info -->
-            <div class="bg-white rounded-xl shadow-sm p-6">
-                <h2 class="text-lg font-bold mb-4 pb-4 border-b border-slate-100">Informations</h2>
+    <!-- Main Content -->
+    <main style="max-width: 1280px; margin: 0 auto; padding: 32px 24px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <!-- Booking Info Card -->
+            <div style="background: white; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; overflow: hidden;">
+                <div style="padding: 20px 24px; border-bottom: 1px solid #f3f4f6;">
+                    <h2 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0;">Informations</h2>
+                </div>
+                <div style="padding: 24px;">
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #6b7280; font-size: 14px;">Statut</span>
+                            <span style="display: inline-flex; padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600; 
+                                {% if booking.booking_status == 'pending' %}background: #fef3c7; color: #92400e;
+                                {% elif booking.booking_status == 'confirmed' %}background: #d1fae5; color: #065f46;
+                                {% elif booking.booking_status == 'rented' %}background: #ede9fe; color: #7c3aed;
+                                {% elif booking.booking_status == 'completed' %}background: #dbeafe; color: #1e40af;
+                                {% elif booking.booking_status == 'cancelled' %}background: #fee2e2; color: #991b1b;
+                                {% else %}background: #f3f4f6; color: #374151;{% endif %}">
+                                {{ booking.get_booking_status_display }}
+                            </span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #6b7280; font-size: 14px;">Date de début</span>
+                            <span style="font-weight: 500; color: #111827; font-size: 14px;">{{ booking.start_date|date:"d/m/Y" }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #6b7280; font-size: 14px;">Date de fin</span>
+                            <span style="font-weight: 500; color: #111827; font-size: 14px;">{{ booking.end_date|date:"d/m/Y" }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #6b7280; font-size: 14px;">Durée</span>
+                            <span style="font-weight: 500; color: #111827; font-size: 14px;">{{ booking.days }} jours</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #6b7280; font-size: 14px;">Prix journalier</span>
+                            <span style="font-weight: 500; color: #111827; font-size: 14px;">{{ booking.daily_price|intcomma }} MAD</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid #f3f4f6;">
+                            <span style="font-weight: 600; color: #111827; font-size: 14px;">Total</span>
+                            <span style="font-size: 20px; font-weight: 700; color: #059669;">{{ booking.total_price|intcomma }} MAD</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                <div class="space-y-4">
-                    <div class="flex justify-between">
-                        <span class="text-slate-500">Statut</span>
-                        <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full
-                            {% if booking.booking_status == 'pending' %}bg-amber-100 text-amber-700
-                            {% elif booking.booking_status == 'confirmed' %}bg-green-100 text-green-700
-                            {% elif booking.booking_status == 'completed' %}bg-blue-100 text-blue-700
-                            {% elif booking.booking_status == 'cancelled' %}bg-red-100 text-red-700
-                            {% else %}bg-slate-100 text-slate-700{% endif %}">
+            <!-- Customer Info Card -->
+            <div style="background: white; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; overflow: hidden;">
+                <div style="padding: 20px 24px; border-bottom: 1px solid #f3f4f6;">
+                    <h2 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0;">Client</h2>
+                </div>
+                <div style="padding: 24px;">
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div>
+                            <span style="display: block; color: #6b7280; font-size: 12px; margin-bottom: 4px;">Nom</span>
+                            <span style="font-weight: 500; color: #111827; font-size: 15px;">{{ booking.customer_name }}</span>
+                        </div>
+                        <div>
+                            <span style="display: block; color: #6b7280; font-size: 12px; margin-bottom: 4px;">Email</span>
+                            <span style="font-weight: 500; color: #111827; font-size: 15px;">{{ booking.customer_email|default:"Non fourni" }}</span>
+                        </div>
+                        <div>
+                            <span style="display: block; color: #6b7280; font-size: 12px; margin-bottom: 4px;">Téléphone</span>
+                            <span style="font-weight: 500; color: #111827; font-size: 15px;">{{ booking.customer_phone|default:"Non fourni" }}</span>
+                        </div>
+                        {% if booking.message %}
+                        <div style="padding-top: 16px; border-top: 1px solid #f3f4f6;">
+                            <span style="display: block; color: #6b7280; font-size: 12px; margin-bottom: 8px;">Message</span>
+                            <div style="background: #f9fafb; padding: 12px 16px; border-radius: 8px; font-size: 14px; color: #374151; line-height: 1.5;">{{ booking.message }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car Info Card -->
+            <div style="background: white; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; overflow: hidden;">
+                <div style="padding: 20px 24px; border-bottom: 1px solid #f3f4f6;">
+                    <h2 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0;">Véhicule</h2>
+                </div>
+                <div style="padding: 24px;">
+                    <div style="display: flex; align-items: flex-start; gap: 16px;">
+                        {% if booking.car.main_image %}
+                        <img src="{{ booking.car.main_image.url }}" alt="{{ booking.car.title }}" style="width: 96px; height: 64px; object-fit: cover; border-radius: 8px; background: #f3f4f6;">
+                        {% endif %}
+                        <div style="flex: 1;">
+                            <p style="font-weight: 600; color: #111827; font-size: 16px; margin: 0 0 4px 0;">{{ booking.car.title }}</p>
+                            <p style="color: #6b7280; font-size: 13px; margin: 0 0 12px 0;">{{ booking.car.category.name }}</p>
+                            <a href="{{ booking.car.get_absolute_url }}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; color: #2563eb; text-decoration: none; font-size: 13px; font-weight: 500;">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                Voir la voiture
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Card -->
+            <div style="background: white; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; overflow: hidden;">
+                <div style="padding: 20px 24px; border-bottom: 1px solid #f3f4f6;">
+                    <h2 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0;">Actions rapides</h2>
+                </div>
+                <div style="padding: 24px;">
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        {% if booking.booking_status == 'pending' %}
+                        <form method="post" style="width: 100%; margin: 0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="confirm">
+                            <button type="submit" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #10b981; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(16,185,129,0.2);">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                Confirmer la réservation
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        {% if booking.booking_status == 'confirmed' or booking.booking_status == 'pending' %}
+                        <form method="post" style="width: 100%; margin: 0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="mark_rented">
+                            <button type="submit" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #8b5cf6; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(139,92,246,0.2);">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                Marquer comme louée
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        {% if booking.booking_status == 'confirmed' or booking.booking_status == 'rented' %}
+                        <form method="post" style="width: 100%; margin: 0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="complete">
+                            <button type="submit" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #2563eb; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(37,99,235,0.2);">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Marquer comme retournée
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        {% if booking.booking_status != 'cancelled' and booking.booking_status != 'completed' %}
+                        <form method="post" style="width: 100%; margin: 0;" onsubmit="return confirm('Annuler cette réservation ?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="cancel">
+                            <button type="submit" style="width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #ef4444; color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(239,68,68,0.2);">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                Annuler la réservation
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+
+                    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #f3f4f6;">
+                        <p style="font-size: 12px; color: #6b7280; margin: 0 0 8px 0;">Statut actuel</p>
+                        <span style="display: inline-flex; padding: 6px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600;
+                            {% if booking.booking_status == 'pending' %}background: #fef3c7; color: #92400e;
+                            {% elif booking.booking_status == 'confirmed' %}background: #d1fae5; color: #065f46;
+                            {% elif booking.booking_status == 'rented' %}background: #ede9fe; color: #7c3aed;
+                            {% elif booking.booking_status == 'completed' %}background: #dbeafe; color: #1e40af;
+                            {% elif booking.booking_status == 'cancelled' %}background: #fee2e2; color: #991b1b;
+                            {% else %}background: #f3f4f6; color: #374151;{% endif %}">
                             {{ booking.get_booking_status_display }}
                         </span>
                     </div>
-
-                    <div class="flex justify-between">
-                        <span class="text-slate-500">Date de début</span>
-                        <span class="font-medium">{{ booking.start_date|date:"d/m/Y" }}</span>
-                    </div>
-
-                    <div class="flex justify-between">
-                        <span class="text-slate-500">Date de fin</span>
-                        <span class="font-medium">{{ booking.end_date|date:"d/m/Y" }}</span>
-                    </div>
-
-                    <div class="flex justify-between">
-                        <span class="text-slate-500">Durée</span>
-                        <span class="font-medium">{{ booking.days }} jours</span>
-                    </div>
-
-                    <div class="flex justify-between">
-                        <span class="text-slate-500">Prix journalier</span>
-                        <span class="font-medium">{{ booking.daily_price|intcomma }} MAD</span>
-                    </div>
-
-                    <div class="flex justify-between pt-4 border-t border-slate-100">
-                        <span class="text-slate-900 font-bold">Total</span>
-                        <span class="text-xl font-bold text-emerald-600">{{ booking.total_price|intcomma }} MAD</span>
-                    </div>
                 </div>
             </div>
 
-            <!-- Customer Info -->
-            <div class="bg-white rounded-xl shadow-sm p-6">
-                <h2 class="text-lg font-bold mb-4 pb-4 border-b border-slate-100">Client</h2>
-
-                <div class="space-y-4">
-                    <div>
-                        <span class="text-slate-500 text-sm">Nom</span>
-                        <p class="font-medium">{{ booking.customer_name }}</p>
-                    </div>
-
-                    <div>
-                        <span class="text-slate-500 text-sm">Email</span>
-                        <p class="font-medium">{{ booking.customer_email|default:"Non fourni" }}</p>
-                    </div>
-
-                    <div>
-                        <span class="text-slate-500 text-sm">Téléphone</span>
-                        <p class="font-medium">{{ booking.customer_phone|default:"Non fourni" }}</p>
-                    </div>
-
-                    {% if booking.message %}
-                    <div class="pt-4 border-t border-slate-100">
-                        <span class="text-slate-500 text-sm">Message</span>
-                        <p class="mt-1 text-sm bg-slate-50 p-3 rounded-lg">{{ booking.message }}</p>
-                    </div>
-                    {% endif %}
+            <!-- Edit Form - Full Width -->
+            <div style="grid-column: 1 / -1; background: white; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; overflow: hidden;">
+                <div style="padding: 20px 24px; border-bottom: 1px solid #f3f4f6;">
+                    <h2 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0;">Modifier la réservation</h2>
                 </div>
-            </div>
-
-            <!-- Car Info -->
-            <div class="bg-white rounded-xl shadow-sm p-6">
-                <h2 class="text-lg font-bold mb-4 pb-4 border-b border-slate-100">Véhicule</h2>
-
-                <div class="flex items-start gap-4">
-                    {% if booking.car.main_image %}
-                    <img src="{{ booking.car.main_image.url }}" alt="{{ booking.car.title }}" class="w-24 h-16 object-cover rounded-lg">
-                    {% endif %}
-                    <div>
-                        <p class="font-bold text-lg">{{ booking.car.title }}</p>
-                        <p class="text-slate-500 text-sm">{{ booking.car.category.name }}</p>
-                        <a href="{{ booking.car.get_absolute_url }}" target="_blank" class="text-blue-600 hover:text-blue-700 text-sm mt-2 inline-block">Voir la voiture</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Edit Form -->
-            <div class="bg-white rounded-xl shadow-sm p-6 lg:col-span-2">
-                <h2 class="text-lg font-bold mb-4 pb-4 border-b border-slate-100">Modifier la réservation</h2>
-
-                <form method="post" class="space-y-4">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="update">
-
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <!-- Customer Name -->
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Nom client</label>
-                            <input type="text" name="customer_name" value="{{ booking.customer_name }}" required
-                                class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-
-                        <!-- Customer Email -->
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                            <input type="email" name="customer_email" value="{{ booking.customer_email|default:'' }}"
-                                class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-
-                        <!-- Customer Phone -->
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Téléphone</label>
-                            <input type="tel" name="customer_phone" value="{{ booking.customer_phone|default:'' }}"
-                                class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-
-                        <!-- Status -->
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Statut</label>
-                            <select name="booking_status" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                {% for value, label in status_choices %}
-                                <option value="{{ value }}" {% if booking.booking_status == value %}selected{% endif %}>{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <!-- Start Date -->
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Date de début</label>
-                            <input type="date" name="start_date" value="{{ booking.start_date|date:'Y-m-d' }}" required
-                                class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-
-                        <!-- End Date -->
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Date de fin</label>
-                            <input type="date" name="end_date" value="{{ booking.end_date|date:'Y-m-d' }}" required
-                                class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-
-                        <!-- Car Selection -->
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Voiture</label>
-                            <select name="car" class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                {% for car in cars %}
-                                <option value="{{ car.id }}" {% if booking.car_id == car.id %}selected{% endif %}>
-                                    {{ car.title }} - {{ car.daily_price }} MAD/jour
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <!-- Message -->
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Notes / Message</label>
-                            <textarea name="message" rows="3"
-                                class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ booking.message|default:'' }}</textarea>
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3 pt-4 border-t border-slate-100">
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition">
-                            Enregistrer les modifications
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="bg-white rounded-xl shadow-sm p-6">
-                <h2 class="text-lg font-bold mb-4 pb-4 border-b border-slate-100">Actions rapides</h2>
-
-                <div class="space-y-3">
-                    {% if booking.booking_status == 'pending' %}
-                    <form method="post" class="w-full">
+                <div style="padding: 24px;">
+                    <form method="post">
                         {% csrf_token %}
-                        <input type="hidden" name="action" value="confirm">
-                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium transition flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            Confirmer la réservation
-                        </button>
-                    </form>
-                    {% endif %}
+                        <input type="hidden" name="action" value="update">
 
-                    {% if booking.booking_status == 'confirmed' or booking.booking_status == 'pending' %}
-                    <form method="post" class="w-full">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="mark_rented">
-                        <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-medium transition flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                            Marquer comme louée
-                        </button>
-                    </form>
-                    {% endif %}
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                            <!-- Customer Name -->
+                            <div>
+                                <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">Nom client *</label>
+                                <input type="text" name="customer_name" value="{{ booking.customer_name }}" required
+                                    style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                            </div>
 
-                    {% if booking.booking_status == 'confirmed' or booking.booking_status == 'rented' %}
-                    <form method="post" class="w-full">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="complete">
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            Marquer comme retournée
-                        </button>
-                    </form>
-                    {% endif %}
+                            <!-- Customer Email -->
+                            <div>
+                                <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">Email</label>
+                                <input type="email" name="customer_email" value="{{ booking.customer_email|default:'' }}"
+                                    style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                            </div>
 
-                    {% if booking.booking_status != 'cancelled' and booking.booking_status != 'completed' %}
-                    <form method="post" class="w-full" onsubmit="return confirm('Annuler cette réservation ?');">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="cancel">
-                        <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-medium transition flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                            Annuler la réservation
-                        </button>
-                    </form>
-                    {% endif %}
-                </div>
+                            <!-- Customer Phone -->
+                            <div>
+                                <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">Téléphone</label>
+                                <input type="tel" name="customer_phone" value="{{ booking.customer_phone|default:'' }}"
+                                    style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                            </div>
 
-                <div class="mt-6 pt-4 border-t border-slate-100">
-                    <p class="text-sm text-slate-500 mb-2">Statut actuel</p>
-                    <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full
-                        {% if booking.booking_status == 'pending' %}bg-amber-100 text-amber-700
-                        {% elif booking.booking_status == 'confirmed' %}bg-green-100 text-green-700
-                        {% elif booking.booking_status == 'rented' %}bg-purple-100 text-purple-700
-                        {% elif booking.booking_status == 'completed' %}bg-blue-100 text-blue-700
-                        {% elif booking.booking_status == 'cancelled' %}bg-red-100 text-red-700
-                        {% else %}bg-slate-100 text-slate-700{% endif %}">
-                        {{ booking.get_booking_status_display }}
-                    </span>
+                            <!-- Status -->
+                            <div>
+                                <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">Statut</label>
+                                <select name="booking_status" style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; background: white; box-sizing: border-box;">
+                                    {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if booking.booking_status == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Start Date -->
+                            <div>
+                                <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">Date de début *</label>
+                                <input type="date" name="start_date" value="{{ booking.start_date|date:'Y-m-d' }}" required
+                                    style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                            </div>
+
+                            <!-- End Date -->
+                            <div>
+                                <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">Date de fin *</label>
+                                <input type="date" name="end_date" value="{{ booking.end_date|date:'Y-m-d' }}" required
+                                    style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; box-sizing: border-box;">
+                            </div>
+
+                            <!-- Car Selection -->
+                            <div style="grid-column: 1 / -1;">
+                                <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">Voiture</label>
+                                <select name="car" style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; background: white; box-sizing: border-box;">
+                                    {% for car in cars %}
+                                    <option value="{{ car.id }}" {% if booking.car_id == car.id %}selected{% endif %}>
+                                        {{ car.title }} - {{ car.daily_price }} MAD/jour
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Message -->
+                            <div style="grid-column: 1 / -1;">
+                                <label style="display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 8px;">Notes / Message</label>
+                                <textarea name="message" rows="3" style="width: 100%; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; color: #111827; resize: vertical; box-sizing: border-box;">{{ booking.message|default:'' }}</textarea>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; padding-top: 24px; margin-top: 24px; border-top: 1px solid #f1f5f9;">
+                            <button type="submit" style="display: inline-flex; align-items: center; gap: 8px; background: #111827; color: white; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Enregistrer les modifications
+                            </button>
+                            <a href="{% url 'dashboard:booking_list' %}" style="display: inline-flex; align-items: center; gap: 8px; background: white; color: #374151; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; border: 1px solid #d1d5db; text-decoration: none; transition: all 0.2s ease;">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                Retour
+                            </a>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 </div>
 {% endblock %}

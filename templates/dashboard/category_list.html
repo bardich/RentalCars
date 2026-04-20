@@ -1,32 +1,96 @@
-{% extends 'base.html' %}{% block title %}Catégories - Tableau de Bord{% endblock %}{% block content %}
-<div class="min-h-screen bg-slate-100">
-<div class="bg-slate-900 text-white py-4 sticky top-0 z-40">
-<div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-<h1 class="text-xl font-bold">Catégories</h1>
-<div class="flex items-center gap-4">
-<a href="{% url 'dashboard:home' %}" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm transition">Tableau de bord</a>
-<a href="{% url 'dashboard:category_create' %}" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition">+ Ajouter</a>
-</div>
-</div>
-</div>
-<div class="max-w-7xl mx-auto px-4 py-8">
-<div class="bg-white rounded-xl shadow-sm overflow-hidden">
-<table class="w-full">
-<thead class="bg-slate-50 border-b border-slate-200"><tr><th class="text-left py-3 px-4 text-sm font-medium text-slate-700">Nom</th><th class="text-left py-3 px-4 text-sm font-medium text-slate-700">Ordre</th><th class="text-left py-3 px-4 text-sm font-medium text-slate-700">Statut</th><th class="text-right py-3 px-4 text-sm font-medium text-slate-700">Actions</th></tr></thead>
-<tbody class="divide-y divide-slate-100">
-{% for cat in categories %}
-<tr class="hover:bg-slate-50 transition">
-<td class="py-3 px-4"><div class="font-medium">{{ cat.name }}</div><div class="text-sm text-slate-500">{{ cat.rentalcars.count }} voitures</div></td>
-<td class="py-3 px-4">{{ cat.order }}</td>
-<td class="py-3 px-4"><span class="inline-flex px-2 py-1 text-xs font-medium rounded-full {% if cat.is_active %}bg-green-100 text-green-700{% else %}bg-slate-100 text-slate-700{% endif %}">{% if cat.is_active %}Active{% else %}Inactive{% endif %}</span></td>
-<td class="py-3 px-4 text-right"><a href="{% url 'dashboard:category_edit' cat.pk %}" class="text-blue-600 hover:text-blue-700 font-medium text-sm mr-4">Modifier</a><a href="{% url 'dashboard:category_delete' cat.pk %}" class="text-red-600 hover:text-red-700 font-medium text-sm">Supprimer</a></td>
-</tr>
-{% empty %}
-<tr><td colspan="4" class="py-8 text-center text-slate-500">Aucune catégorie</td></tr>
-{% endfor %}
-</tbody>
-</table>
-</div>
-</div>
+{% extends 'base.html' %}
+{% block title %}Catégories - Gestion de Flotte{% endblock %}
+{% block content %}
+<div style="min-height: 100vh; background: linear-gradient(135deg, #f9fafb 0%, #fff 50%, #f3f4f6 100%); font-family: system-ui, -apple-system, sans-serif;">
+<!-- Critical inline styles -->
+<style>
+  .category-header { background: white !important; border-bottom: 1px solid rgba(229,231,235,0.8) !important; position: sticky !important; top: 0 !important; z-index: 40 !important; }
+  .category-table { background: white !important; border-radius: 16px !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; overflow: hidden !important; border: 1px solid #f3f4f6 !important; }
+  .category-table th { background: #f9fafb !important; border-bottom: 1px solid #e5e7eb !important; padding: 16px 20px !important; text-align: left !important; font-size: 13px !important; font-weight: 600 !important; color: #374151 !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; }
+  .category-table td { padding: 20px !important; border-bottom: 1px solid #f3f4f6 !important; font-size: 14px !important; color: #111827 !important; }
+  .category-table tr:hover { background: #f9fafb !important; }
+  .category-status { display: inline-flex !important; padding: 6px 12px !important; border-radius: 9999px !important; font-size: 12px !important; font-weight: 600 !important; }
+  .category-status.active { background: #d1fae5 !important; color: #065f46 !important; }
+  .category-status.inactive { background: #f3f4f6 !important; color: #6b7280 !important; }
+  .category-btn { display: inline-flex !important; align-items: center !important; gap: 8px !important; background: #111827 !important; color: white !important; padding: 10px 20px !important; border-radius: 10px !important; font-size: 14px !important; font-weight: 500 !important; text-decoration: none !important; }
+  .category-link { color: #2563eb !important; text-decoration: none !important; font-weight: 500 !important; margin-right: 16px !important; }
+  .category-link:hover { color: #1d4ed8 !important; }
+  .category-delete { color: #dc2626 !important; text-decoration: none !important; font-weight: 500 !important; }
+  .category-delete:hover { color: #b91c1c !important; }
+</style>
+
+    <!-- Header -->
+    <header style="background: white; border-bottom: 1px solid rgba(229,231,235,0.8); position: sticky; top: 0; z-index: 40;">
+        <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; height: 64px;">
+                <div style="display: flex; align-items: center; gap: 32px;">
+                    <a href="{% url 'dashboard:home' %}" style="display: flex; align-items: center; gap: 8px; color: #111827; text-decoration: none;">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span style="font-weight: 500; font-size: 14px;">Dashboard</span>
+                    </a>
+                    <h1 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0;">Catégories</h1>
+                </div>
+                <nav style="display: flex; align-items: center; gap: 24px;">
+                    <a href="{% url 'dashboard:car_list' %}" style="color: #6b7280; text-decoration: none; font-size: 14px; font-weight: 500;">Parc</a>
+                    <a href="{% url 'dashboard:category_create' %}" style="display: inline-flex; align-items: center; gap: 8px; background: #111827; color: white; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; text-decoration: none;">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Ajouter
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main style="max-width: 1280px; margin: 0 auto; padding: 40px 24px;">
+        <!-- Categories Table -->
+        <div class="category-table">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Ordre</th>
+                        <th>Statut</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cat in categories %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 500; color: #111827;">{{ cat.name }}</div>
+                            <div style="font-size: 13px; color: #6b7280; margin-top: 4px;">{{ cat.rentalcars.count }} voitures</div>
+                        </td>
+                        <td>{{ cat.order }}</td>
+                        <td>
+                            <span class="category-status {% if cat.is_active %}active{% else %}inactive{% endif %}">
+                                {% if cat.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </td>
+                        <td style="text-align: right;">
+                            <a href="{% url 'dashboard:category_edit' cat.pk %}" class="category-link">Modifier</a>
+                            <a href="{% url 'dashboard:category_delete' cat.pk %}" class="category-delete">Supprimer</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 60px 20px; color: #6b7280;">
+                            <div style="width: 64px; height: 64px; background: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                                <svg width="32" height="32" fill="none" stroke="#9ca3af" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                </svg>
+                            </div>
+                            <p style="font-size: 16px; font-weight: 500; color: #374151; margin: 0 0 8px 0;">Aucune catégorie</p>
+                            <p style="font-size: 14px; color: #6b7280; margin: 0;">Commencez par ajouter une nouvelle catégorie</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
 </div>
 {% endblock %}
