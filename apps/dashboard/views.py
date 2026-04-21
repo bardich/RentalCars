@@ -13,6 +13,7 @@ from django.views.decorators.http import require_POST
 
 from apps.fleet.models import RentalCar, Category, Brand, CarFeature, CarImage
 from apps.bookings.models import Booking
+from .models import SiteSettings
 
 
 # Admin required decorator - only superusers can access dashboard
@@ -687,3 +688,54 @@ def brand_delete(request, pk):
         return redirect('dashboard:brand_list')
 
     return render(request, 'dashboard/brand_delete.html', {'brand': brand})
+
+
+# ============================================================================
+# Site Settings Management
+# ============================================================================
+@admin_required
+def site_settings(request):
+    """Manage site-wide settings."""
+    settings = SiteSettings.get_settings()
+
+    if request.method == 'POST':
+        # Site Identity
+        settings.site_name = request.POST.get('site_name', 'Rental Cars Morocco')
+        settings.site_description = request.POST.get('site_description', '')
+        
+        # Handle logo upload
+        if request.FILES.get('site_logo'):
+            settings.site_logo = request.FILES['site_logo']
+        
+        # Handle favicon upload
+        if request.FILES.get('site_favicon'):
+            settings.site_favicon = request.FILES['site_favicon']
+        
+        # Contact Information
+        settings.site_email = request.POST.get('site_email', '')
+        settings.site_phone = request.POST.get('site_phone', '')
+        settings.site_address = request.POST.get('site_address', '')
+        
+        # Footer
+        settings.site_footer = request.POST.get('site_footer', '')
+        
+        # Social Media
+        settings.facebook_url = request.POST.get('facebook_url', '')
+        settings.instagram_url = request.POST.get('instagram_url', '')
+        settings.twitter_url = request.POST.get('twitter_url', '')
+        settings.linkedin_url = request.POST.get('linkedin_url', '')
+        settings.youtube_url = request.POST.get('youtube_url', '')
+        settings.whatsapp_number = request.POST.get('whatsapp_number', '')
+        
+        # Theme
+        settings.site_theme = request.POST.get('site_theme', 'light')
+        
+        settings.save()
+        messages.success(request, 'Paramètres du site mis à jour!')
+        return redirect('dashboard:site_settings')
+
+    context = {
+        'settings': settings,
+        'theme_choices': SiteSettings.THEME_CHOICES,
+    }
+    return render(request, 'dashboard/site_settings.html', context)

@@ -2,8 +2,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex items-center">
-                <a href="{% url 'home' %}" class="text-white text-xl font-bold">
+                <a href="{% url 'home' %}" class="text-white text-xl font-bold flex items-center gap-2">
+                    {% if site_settings.site_logo %}
+                    <img src="{{ site_settings.site_logo.url }}" alt="{{ site_settings.site_name }}" class="h-8 w-auto">
+                    {% else %}
                     {{ site_settings.site_name|default:"Rental Cars Morocco" }}
+                    {% endif %}
                 </a>
             </div>
             <div class="hidden md:flex items-center space-x-8">

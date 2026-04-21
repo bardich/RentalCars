@@ -37,4 +37,7 @@ urlpatterns = [
     path('brands/create/', views.brand_create, name='brand_create'),
     path('brands/<int:pk>/edit/', views.brand_edit, name='brand_edit'),
     path('brands/<int:pk>/delete/', views.brand_delete, name='brand_delete'),
+
+    # Site Settings
+    path('settings/', views.site_settings, name='site_settings'),
 ]
